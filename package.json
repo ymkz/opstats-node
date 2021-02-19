@@ -1,0 +1,25 @@
+{
+  "name": "opstats",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "esno src/main.ts",
+    "build": "tsup src/main.ts"
+  },
+  "dependencies": {
+    "fast-printf": "^1.5.8",
+    "fs-extra": "^9.1.0",
+    "get-stdin": "^8.0.0",
+    "meow": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.7",
+    "esno": "^0.4.4",
+    "prettier": "^2.2.1",
+    "tsup": "^4.0.0",
+    "typescript": "^4.1.5"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
