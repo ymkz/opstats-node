@@ -30,8 +30,6 @@ function getPercentile(list: number[], n: number): number {
   return list[k]
 }
 
-const DEFAULT_PERCENTILES = '90,95,99'
-
 const cli = meow(
   `
 	Usage
@@ -42,10 +40,10 @@ const cli = meow(
 	  --max            Output a maximum
 	  --avg            Output a average
 	  --med            Output a median
-	  --per ${DEFAULT_PERCENTILES}   Output a percentile
+	  --per 90,95,99   Output a percentile
 
 	Examples
-	  $ opstats                     Output all result
+	  $ opstats FILE                Output all result
 	  $ opstats --min               Output only minimum result
 	  $ opstats --per 80,90         Output only 80%tile and 90%tile result
 	  $ opstats --avg --per 80,90   Output average, 80%tile and 90%tile result
@@ -56,7 +54,7 @@ const cli = meow(
       max: { type: 'boolean', default: false },
       avg: { type: 'boolean', default: false },
       med: { type: 'boolean', default: false },
-      per: { type: 'string', default: DEFAULT_PERCENTILES },
+      per: { type: 'string', default: '' },
     },
   }
 )
@@ -84,11 +82,11 @@ async function main() {
     })
 
   if (
-    cli.flags.min !== false ||
-    cli.flags.max !== false ||
-    cli.flags.avg !== false ||
-    cli.flags.med !== false ||
-    cli.flags.per !== DEFAULT_PERCENTILES
+    cli.flags.min ||
+    cli.flags.max ||
+    cli.flags.avg ||
+    cli.flags.med ||
+    cli.flags.per.length
   ) {
     // オプション指定あり -> 指定ありオプションのみ出力
     if (cli.flags.min) {
@@ -103,10 +101,8 @@ async function main() {
     if (cli.flags.med) {
       console.log(printf('Med %6.6f', getMedian(list)))
     }
-    if (cli.flags.per !== DEFAULT_PERCENTILES) {
-      for (const n of cli.flags.per.split(',').map((n) => parseInt(n))) {
-        console.log(printf('%2d% %6.6f', n, getPercentile(list, n)))
-      }
+    for (const n of cli.flags.per.split(',').map((n) => parseInt(n))) {
+      console.log(printf('%2d% %6.6f', n, getPercentile(list, n)))
     }
   } else {
     // オプション指定なし：デフォルト -> 全オプション出力
@@ -114,7 +110,7 @@ async function main() {
     console.log(printf('Max %6.6f', getMaximum(list)))
     console.log(printf('Avg %6.6f', getAverage(list)))
     console.log(printf('Med %6.6f', getMedian(list)))
-    for (const n of cli.flags.per.split(',').map((n) => parseInt(n))) {
+    for (const n of [90, 95, 99]) {
       console.log(printf('%2d% %6.6f', n, getPercentile(list, n)))
     }
   }
